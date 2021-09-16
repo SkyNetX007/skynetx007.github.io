@@ -1,3 +1,61 @@
-baseURL = "http://example.org/"
-languageCode = "en-us"
-title = "My New Hugo Site"
+# Basic
+title = "SkyNetX007's"
+baseURL = "https://skynetx007.github.io/"
+languageCode = "zh-CN"
+theme = "vno-hugo"
+
+# Pagination
+paginate = 10
+paginatePath = "page"
+
+[outputs]
+  home = ["HTML", "RSS"]
+
+[menu]
+  [[menu.main]]
+    name = "主页"
+    identifier = "projects"
+    url = "/"
+    weight = 10
+
+[taxonomies]
+    tag = "tags"
+    
+[params]
+author = "SkyNetX007"
+#subtitle = "A blog-orientation theme for Hugo"
+description = "警告，这里没有猫猫！"
+welcomeMessage = "Oh What a World"
+
+# supported colors: blue, green, purple, red, orange or slate. If you need clear, leave it empty.
+#coverColor = "red"
+
+[params.comment]
+#disqus = "vno-hugo"
+#duoshuo = ""
+
+# Take a look on https://github.com/gitalk/gitalk#usage for more info.
+[params.comment.gitalk]
+ID = ""
+secret = ""
+repo = ""
+owner = ""
+
+[params.social]
+#weibo = ""
+github = "SkyNetX007"
+twitter = "SkyNetX007"
+#gplus = ""
+mail = "SkyNetX007@exception.tk"
+
+[params.ga]
+#ID = "your_ga_id"
+#host = "your_host"
+
+# The blog button should not be removed.
+[params.blogButton]
+title = "Blog"
+description = "Visit blog"
+
+[permalinks]
+posts = "/:year/:month/:title/"
