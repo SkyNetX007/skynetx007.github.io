@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<head>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    
+    <link rel="icon" type="image/png" href="/images/favicon.png" />
+<link rel="shortcut icon" type="image/png" href="/images/favicon.png" />
+
+    
+    
+    <title>计算机控制系统 - SkyNetX007&#39;s</title>
+    
+    
+    <meta name="author" content="SkyNetX007" /> 
+     
+    
+    <meta name="description" content="警告，这里没有猫猫！" /> 
+    
+    
+    <meta name="keywords" content="Notes" />
+    
+    <meta property="og:title" content="计算机控制系统" />
+<meta property="og:description" content="数字PID控制器设计 标准数字PID控制算法 标准PID数字控制算式  位置型PID 增量型PID 递推式PID  $K_i=\frac{K_p T}{T_i}$为积分系数，$K_d=\frac{K_p T_d}{T}$为微分系数
+增量型PID相对于位置型的优点：
+ 增量的确定仅售最近几次偏差采样影响，累加误差小 使用控制量的增量，误动作影响小 手动/自动无扰动切换 不会产生积分饱和现象  增量型PID原理上需要一个积分器：增量型执行元件需要位置保持功能
+对增量型算法进行限幅可保证执行器动作幅度小，有利于克服系统故障出现的问题（如阀门调节）
+数字PID基本编程 改进的PID算法 带有死区的PID算法 偏差较小保持上次控制值，偏差较大重新计算控制值。
+抑制积分饱和PID算法  限幅削弱积分：设置饱和区，达到饱和区后控制值不变化 积分分离PID算式：大偏差时取消积分作用，采用PD或纯比例控制，小偏差恢复PID 变速积分PID算式：设置过渡带，偏差大无积分，偏差小全积分，由大到小积分作用逐渐增强（有利于抵抗积分饱和，且算法切换系统响应不变动；但算法复杂，且多出参数A、B）  不完全微分的PID控制 （P60）
+微分太强的危害：输出毛刺多，动态过程长久振荡无法进入稳态
+不完全微分传递函数： $$\frac{U(s)}{E(s)}=K_p [1&#43;\frac 1 {T_i s}&#43;\frac{T_d s}{1&#43;\frac{T_d}{K_d} s}]$$ 比例积分&#43;不完全微分($\frac{T_d s}{1&#43;\frac{T_d}{K_d} s}$) 微分项控制输出为 $$U_D(k)=\alpha u_D(k-1)&#43;\frac{K_p T_d}{T}(1-\alpha)[e(k)-e(k-1)])$$ 其中，$T_f=\frac{T_d}{K_d}$，$\alpha=\frac{T_f}{T_f&#43;T}$
+不完整PID数字低通滤波（一阶惯性环节），抗高频干扰，信号突变时比较平滑。
+微分先行PID控制 只对反馈实行不完全积分，对设定量不进行微分。
+ 优点：可避免大幅度改变设定值时造成振荡现象以及抑制噪声 缺点：算法复杂  其他控制方法 数字滤波：低通滤波、均值滤波、中值滤波
+数字PID控制器的工程实现 工程上数字PID控制器程序组成 六个模块：
+ 设定值处理  选择不同来源的设定值（一般存在内存中） 对设定值的变化率进行限制（实现平稳控制）   被控量处理  数字滤波 线性补偿和公式转换 越限报警处理（报警死区：报警死区的作用是为了防止变量值在报警限上下频繁波动时，产生许多不真实的报警 ( http://scada1." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://skynetx007.github.io/2021/09/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8E%A7%E5%88%B6%E7%B3%BB%E7%BB%9F/" />
+<meta property="article:published_time" content="2021-09-16T12:48:25+08:00" />
+<meta property="article:modified_time" content="2021-09-16T12:48:25+08:00" />
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="计算机控制系统"/>
+<meta name="twitter:description" content="数字PID控制器设计 标准数字PID控制算法 标准PID数字控制算式  位置型PID 增量型PID 递推式PID  $K_i=\frac{K_p T}{T_i}$为积分系数，$K_d=\frac{K_p T_d}{T}$为微分系数
+增量型PID相对于位置型的优点：
+ 增量的确定仅售最近几次偏差采样影响，累加误差小 使用控制量的增量，误动作影响小 手动/自动无扰动切换 不会产生积分饱和现象  增量型PID原理上需要一个积分器：增量型执行元件需要位置保持功能
+对增量型算法进行限幅可保证执行器动作幅度小，有利于克服系统故障出现的问题（如阀门调节）
+数字PID基本编程 改进的PID算法 带有死区的PID算法 偏差较小保持上次控制值，偏差较大重新计算控制值。
+抑制积分饱和PID算法  限幅削弱积分：设置饱和区，达到饱和区后控制值不变化 积分分离PID算式：大偏差时取消积分作用，采用PD或纯比例控制，小偏差恢复PID 变速积分PID算式：设置过渡带，偏差大无积分，偏差小全积分，由大到小积分作用逐渐增强（有利于抵抗积分饱和，且算法切换系统响应不变动；但算法复杂，且多出参数A、B）  不完全微分的PID控制 （P60）
+微分太强的危害：输出毛刺多，动态过程长久振荡无法进入稳态
+不完全微分传递函数： $$\frac{U(s)}{E(s)}=K_p [1&#43;\frac 1 {T_i s}&#43;\frac{T_d s}{1&#43;\frac{T_d}{K_d} s}]$$ 比例积分&#43;不完全微分($\frac{T_d s}{1&#43;\frac{T_d}{K_d} s}$) 微分项控制输出为 $$U_D(k)=\alpha u_D(k-1)&#43;\frac{K_p T_d}{T}(1-\alpha)[e(k)-e(k-1)])$$ 其中，$T_f=\frac{T_d}{K_d}$，$\alpha=\frac{T_f}{T_f&#43;T}$
+不完整PID数字低通滤波（一阶惯性环节），抗高频干扰，信号突变时比较平滑。
+微分先行PID控制 只对反馈实行不完全积分，对设定量不进行微分。
+ 优点：可避免大幅度改变设定值时造成振荡现象以及抑制噪声 缺点：算法复杂  其他控制方法 数字滤波：低通滤波、均值滤波、中值滤波
+数字PID控制器的工程实现 工程上数字PID控制器程序组成 六个模块：
+ 设定值处理  选择不同来源的设定值（一般存在内存中） 对设定值的变化率进行限制（实现平稳控制）   被控量处理  数字滤波 线性补偿和公式转换 越限报警处理（报警死区：报警死区的作用是为了防止变量值在报警限上下频繁波动时，产生许多不真实的报警 ( http://scada1."/>
+
+
+    
+    
+    <link rel="stylesheet" href="https://skynetx007.github.io/scss/main.min.cf6539aab3732ace7d3c861067a0de9abd7c6245ba177eaabb51a9e9b581be2b.css" integrity="sha256-z2U5qrNzKs59PIYQZ6Demr18YkW6F36qu1Gp6bWBvis=" crossorigin="anonymous" media="screen">
+	<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+    
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    
+    
+    
+
+
+</head>
+  
+</head>
+<body>
+  <span class="mobile btn-mobile-menu">
+
+    <i class="fa fa-list btn-mobile-menu__icon"></i>
+    <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+
+  </span>
+
+  <header class="panel-cover  panel-cover--collapsed " style="background-image: url('/images/background-cover.jpg')">
+    <div class="panel-main">
+  
+      <div class="panel-main__inner panel-inverted">
+      <div class="panel-main__content">
+  
+          <a href="/#blog" title="前往 SkyNetX007&#39;s 的主页" class="blog-button"><img src="/images/avatar.jpg" width="80" alt="SkyNetX007&#39;s logo" class="panel-cover__logo logo" /></a>
+          <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for SkyNetX007&#39;s" class="blog-button">SkyNetX007&#39;s</a></h1>
+          
+          <hr class="panel-cover__divider" />
+          <p class="panel-cover__description">警告，这里没有猫猫！</p>
+          <hr class="panel-cover__divider panel-cover__divider--secondary" />
+          
+          
+          <p class="panel-cover__description">Oh What a World</p>
+          
+          
+          <div class="navigation-wrapper">
+            <div>
+              <nav class="cover-navigation cover-navigation--primary">
+                <ul class="navigation">
+                  <li class="navigation__item"><a href="/#blog" title="Blog" class="blog-button">Blog</a></li>
+                  
+                    <li class="navigation__item"><a href="/" target="_blank" title="主页">主页</a></li>
+                  
+                </ul>
+              </nav>
+            </div>
+            
+            <div><nav class="cover-navigation navigation--social">
+    <ul class="navigation">
+  
+    
+  
+    
+    
+    <li class="navigation__item">
+      <a href="https://github.com/SkyNetX007" title="@SkyNetX007 的 Github" target="_blank">
+        <i class='social fa fa-github'></i>
+        <span class="label">Github</span>
+      </a>
+    </li>
+    
+    
+    
+    
+    <li class="navigation__item">
+      <a href="http://twitter.com/SkyNetX007" title="@SkyNetX007" target="_blank">
+        <i class='social fa fa-twitter'></i>
+        <span class="label">Twitter</span>
+      </a>
+    </li>
+    
+  
+    
+  
+    
+    <li class="navigation__item">
+      <a href="/index.xml" rel="author" title="RSS" target="_blank">
+        <i class='social fa fa-rss'></i>
+        <span class="label">RSS</span>
+      </a>
+    </li>
+  
+    
+    
+    <li class="navigation__item">
+      <a href="mailto:SkyNetX007@exception.tk" title="Contact me">
+        <i class='social fa fa-envelope'></i>
+        <span class="label">Email</span>
+      </a>
+    </li>
+    
+  
+    </ul>
+  </nav>
+  </div>
+          </div>
+        </div>
+      </div>
+      
+      
+      <div class="panel-cover--overlay cover-disabled"></div>
+      
+    </div>
+  </header>
+  
+
+  <div class="content-wrapper">
+    <div class="content-wrapper__inner">
+
+        
+<article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+    <header class="post-header">
+        <div class="post-meta">
+            <time datetime=" 2021-09-16 12:48:25 &#43;0800 " itemprop="datePublished" class="post-meta__date date">2021-09-16</time>
+             <span class="post-list__meta--tags tags">• Notes</span> 
+        </div>
+        <h1 class="post-title">计算机控制系统</h1>
+    </header>
+    <section class="post">
+        <h1 id="数字pid控制器设计">数字PID控制器设计</h1>
+<h2 id="标准数字pid控制算法">标准数字PID控制算法</h2>
+<h3 id="标准pid数字控制算式">标准PID数字控制算式</h3>
+<ul>
+<li>位置型PID</li>
+<li>增量型PID</li>
+<li>递推式PID</li>
+</ul>
+<p>$K_i=\frac{K_p T}{T_i}$为积分系数，$K_d=\frac{K_p T_d}{T}$为微分系数</p>
+<p>增量型PID相对于位置型的优点：</p>
+<ol>
+<li>增量的确定仅售最近几次偏差采样影响，累加误差小</li>
+<li>使用控制量的增量，误动作影响小</li>
+<li>手动/自动无扰动切换</li>
+<li>不会产生积分饱和现象</li>
+</ol>
+<p>增量型PID原理上需要一个积分器：增量型执行元件需要位置保持功能</p>
+<p>对增量型算法进行限幅可保证执行器动作幅度小，有利于克服系统故障出现的问题（如阀门调节）</p>
+<h3 id="数字pid基本编程">数字PID基本编程</h3>
+<h2 id="改进的pid算法">改进的PID算法</h2>
+<h3 id="带有死区的pid算法">带有死区的PID算法</h3>
+<p>偏差较小保持上次控制值，偏差较大重新计算控制值。</p>
+<h3 id="抑制积分饱和pid算法">抑制积分饱和PID算法</h3>
+<ol>
+<li>限幅削弱积分：设置饱和区，达到饱和区后控制值不变化</li>
+<li>积分分离PID算式：大偏差时取消积分作用，采用PD或纯比例控制，小偏差恢复PID</li>
+<li>变速积分PID算式：设置过渡带，偏差大无积分，偏差小全积分，由大到小积分作用逐渐增强（有利于抵抗积分饱和，且算法切换系统响应不变动；但算法复杂，且多出参数A、B）</li>
+</ol>
+<h3 id="不完全微分的pid控制">不完全微分的PID控制</h3>
+<p>（P60）</p>
+<p>微分太强的危害：输出毛刺多，动态过程长久振荡无法进入稳态</p>
+<p>不完全微分传递函数：
+$$\frac{U(s)}{E(s)}=K_p [1+\frac 1 {T_i s}+\frac{T_d s}{1+\frac{T_d}{K_d} s}]$$
+比例积分+不完全微分($\frac{T_d s}{1+\frac{T_d}{K_d} s}$)
+微分项控制输出为
+$$U_D(k)=\alpha u_D(k-1)+\frac{K_p T_d}{T}(1-\alpha)[e(k)-e(k-1)])$$
+其中，$T_f=\frac{T_d}{K_d}$，$\alpha=\frac{T_f}{T_f+T}$</p>
+<p>不完整PID数字低通滤波（一阶惯性环节），抗高频干扰，信号突变时比较平滑。</p>
+<h3 id="微分先行pid控制">微分先行PID控制</h3>
+<p>只对反馈实行不完全积分，对设定量不进行微分。</p>
+<ul>
+<li>优点：可避免大幅度改变设定值时造成振荡现象以及抑制噪声</li>
+<li>缺点：算法复杂</li>
+</ul>
+<h3 id="其他控制方法">其他控制方法</h3>
+<p>数字滤波：低通滤波、均值滤波、中值滤波</p>
+<h2 id="数字pid控制器的工程实现">数字PID控制器的工程实现</h2>
+<h3 id="工程上数字pid控制器程序组成">工程上数字PID控制器程序组成</h3>
+<p>六个模块：</p>
+<ol>
+<li>设定值处理
+<ul>
+<li>选择不同来源的设定值（一般存在内存中）</li>
+<li>对设定值的变化率进行限制（实现平稳控制）</li>
+</ul>
+</li>
+<li>被控量处理
+<ul>
+<li>数字滤波</li>
+<li>线性补偿和公式转换</li>
+<li>越限报警处理（报警死区：报警死区的作用是为了防止变量值在报警限上下频繁波动时，产生许多不真实的报警 ( <a href="http://scada1.t50rtu.com/html_file/sc01b/241.html">http://scada1.t50rtu.com/html_file/sc01b/241.html</a> )</li>
+</ul>
+</li>
+<li>偏差处理
+<ul>
+<li>计算偏差(P64(4))
+<ul>
+<li>正作用：被控量-设定值</li>
+<li>反作用：设定值-被控量</li>
+</ul>
+</li>
+<li>偏差报警</li>
+<li>算法实现非线性</li>
+</ul>
+</li>
+<li>PID计算</li>
+<li>控制量处理
+<ul>
+<li>输出补偿</li>
+<li>变化率限制</li>
+<li>输出保持</li>
+<li>安全输出</li>
+</ul>
+</li>
+<li>自动/手动切换
+<ul>
+<li>硬手动（直接手动操作）/软手动（给出手动信号由计算机采集）</li>
+<li>无扰切换（增量式/递推式）</li>
+<li>控制值限幅</li>
+</ul>
+</li>
+</ol>
+<p>需要注意的问题：</p>
+<ul>
+<li>定点运算/浮点运算</li>
+<li>控制输出限幅</li>
+<li>积累整量化误差（定点运算和小的采样周期易出现）
+<ul>
+<li>适当加大采样周期</li>
+<li>积累数据专门处理，若干采样周期统一量化计算</li>
+</ul>
+</li>
+<li>正反处理</li>
+</ul>
+<h2 id="pid参数整定方法">PID参数整定方法</h2>
+<h3 id="采样周期t的选择">采样周期T的选择</h3>
+<ol>
+<li>信号特性：T必须满足香农定理，尽可能小，但不能太小。考虑计算机响应频率，防止引入计算误差，通常取信号最高频率的5至10倍。</li>
+<li>被控对象和执行机构特性：快T小，慢T大；纯滞后系统最后是T的整数倍。$\frac\tau T=N,N\in整数$</li>
+<li>对多回路系统，按采样周期短的设定。</li>
+<li>数字控制算法要求T不能太小。</li>
+</ol>
+<h3 id="扩充临界比例度法试凑法">扩充临界比例度法+试凑法</h3>
+<h3 id="衰减曲线法">衰减曲线法</h3>
+<h1 id="数字控制器的连续系统方法设计">数字控制器的连续系统方法设计</h1>
+<h2 id="连续系统方法设计数字控制器的原理">连续系统方法设计数字控制器的原理</h2>
+<ul>
+<li>两种设计模式</li>
+</ul>
+<ol>
+<li>将系统等效于连续系统，设计连续控制器，然后离散化得到数字控制器</li>
+<li>将系统等效于离散系统，根轨迹法、解析法直接设计数字控制器</li>
+</ol>
+<ul>
+<li>设计步骤</li>
+</ul>
+<ol>
+<li>首先根据性能指标用连续时间系统的根轨迹/频率特性等方法设计D(s)</li>
+<li>插入采样开关和保持器，选择合适的采样频率T（开环截止频率的10倍左右），若连续系统特性未发生较大变换则继续，否则重新选取或设计</li>
+<li>选择适当的方法将D(s)离散化为D(z)</li>
+<li>将G(s)加保持器离散化为G(z)，用求得的D(z)和G(z)构成数字闭环系统，分析系统是否满足条件，不满足重新设计</li>
+</ol>
+<h2 id="数值积分法">数值积分法</h2>
+<p>将D(s)转换成微分方程，再用近似积分法等效于差分方程，进而求得控制器D(z)
+$$u(kT)=u[(k-1)T]+\int_{(k-1)T}^{kT}(-au+ae)dt$$
+积分部分为(-au+ae)在区间[(k-1)T,kT]的面积</p>
+<h3 id="前向矩形法">前向矩形法</h3>
+<p>将积分近似为相应的矩形，长为-au[(k-1)T]+ae[(k-1)T]，宽为T</p>
+<p>回代得
+$$u(kT)-(1-aT)u[(k-1)T]=aTe[(k-1)T]$$
+两边取Z变换
+$$D(z)=\frac{U(z)}{E(z)}=\frac{aTz^{-1}}{1-(1aT)z^{-1}}=\frac{a}{\frac{z-1}{T}+a}$$</p>
+<p>则$s\cong\frac{z-1}{T}, z\cong1+Ts$
+$$D(z)=D(s)|_{s=\frac{z-1}{T}}$$
+$$z=e^{sT}=1+sT+(sT)^2+\cdots\approx1+Ts$$
+本质为忽略泰勒展开2次项及更高项</p>
+<h3 id="后向矩形法">后向矩形法</h3>
+<p>将积分近似为相应的矩形，长为-au(kT)+ae(kT)，宽为T，其余类似前向矩形法</p>
+<h3 id="梯形法">梯形法</h3>
+<p>将积分近似为相应的梯形，上底为-au(kT)+ae(kT)，下底为-au[(k-1)T]+ae[(k-1)T]，高度为T
+$$D(z)=\frac{a}{\frac{2}{T}\frac{z-1}{z+1}+a}$$
+$$s\cong\frac{2}{T}\frac{1-z^{-1}}{1+z^{-1}}, z\cong\frac{1+\frac{Ts}{2}}{1-\frac{Ts}{2}}$$
+即双线性变换</p>
+<p>泰勒级数展开推导：$z=e^{sT}=\frac{e^{\frac{sT}{2}}}{e^{\frac{-sT}{2}}}\approx\frac{1+\frac{sT}{2}}{1-\frac{sT}{2}}$</p>
+<h3 id="稳定性分析">稳定性分析</h3>
+<ul>
+<li>s稳定域：左半平面</li>
+<li>z稳定域：单位圆内</li>
+</ul>
+<ol>
+<li>前向矩形规则
+$$z=1+sT=1+jT\omega$$</li>
+<li>后向矩形规则
+$$z=\frac{1}{2}$$</li>
+<li>双线性变换
+$$z=1$$</li>
+</ol>
+<hr>
+<h1 id="复习">复习</h1>
+
+    </section>
+</article>
+<section class="read-more">
+    
+
+
+    
+    <div class="read-more-item">
+        <span class="read-more-item-dim">更早的文章</span>
+        <h2 class="post-list__post-title post-title"><a href="/2021/07/hello-world-vno/" title="link to Hello World Vno">Hello World Vno</a></h2>
+        <p class="excerpt">What&rsquo;s this Vno Hugo is a theme for Hugo. It is a port of onevcat&rsquo;s Vno Jekyll, which is originally developed from Dale Anthony&rsquo;s Uno.
+Usage Inside the folder of your Hugo site run:
+$ git submodule add …&hellip;</p>
+        <div class="post-list__meta">
+            <time datetime=" 2021-09-16 12:48:25 &#43;0800" class="post-list__meta--date date">2021-07-19</time>
+             <span class="post-list__meta--tags tags">• Say Hi  • Vno</span> 
+            <a class="btn-border-small" href="/2021/07/hello-world-vno/">继续阅读</a></div>
+        </div>
+    
+ </section>
+  
+<section class="post-comments">
+    
+
+    
+    
+  </section>
+  
+
+        <section class="footer">
+    <footer>
+        <span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">由 <a href="https://gohugo.io/">Hugo</a> 于 2021-09-16 生成，采用<a href="https://github.com/xslingcn/vno-hugo"> Vno - Hugo </a>作为主题</span>
+    </footer>
+</section>
+
+    </div>
+  </div>
+
+  <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+  
+</body>
+

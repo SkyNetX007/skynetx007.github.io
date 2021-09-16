@@ -1,3 +1,6 @@
+# Build
+publishDir = "docs"
+
 # Basic
 title = "SkyNetX007's"
 baseURL = "https://skynetx007.github.io/"

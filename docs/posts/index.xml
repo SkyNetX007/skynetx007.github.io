@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on SkyNetX007&#39;s</title>
+    <link>https://skynetx007.github.io/posts/</link>
+    <description>Recent content in Posts on SkyNetX007&#39;s</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Thu, 16 Sep 2021 12:48:25 +0800</lastBuildDate>
+    
+	<atom:link href="https://skynetx007.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>计算机控制系统</title>
+      <link>https://skynetx007.github.io/2021/09/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8E%A7%E5%88%B6%E7%B3%BB%E7%BB%9F/</link>
+      <pubDate>Thu, 16 Sep 2021 12:48:25 +0800</pubDate>
+      
+      <guid>https://skynetx007.github.io/2021/09/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8E%A7%E5%88%B6%E7%B3%BB%E7%BB%9F/</guid>
+      <description>数字PID控制器设计 标准数字PID控制算法 标准PID数字控制算式  位置型PID 增量型PID 递推式PID  $K_i=\frac{K_p T}{T_i}$为积分系数，$K_d=\frac{K_p T_d}{T}$为微分系数
+增量型PID相对于位置型的优点：
+ 增量的确定仅售最近几次偏差采样影响，累加误差小 使用控制量的增量，误动作影响小 手动/自动无扰动切换 不会产生积分饱和现象  增量型PID原理上需要一个积分器：增量型执行元件需要位置保持功能
+对增量型算法进行限幅可保证执行器动作幅度小，有利于克服系统故障出现的问题（如阀门调节）
+数字PID基本编程 改进的PID算法 带有死区的PID算法 偏差较小保持上次控制值，偏差较大重新计算控制值。
+抑制积分饱和PID算法  限幅削弱积分：设置饱和区，达到饱和区后控制值不变化 积分分离PID算式：大偏差时取消积分作用，采用PD或纯比例控制，小偏差恢复PID 变速积分PID算式：设置过渡带，偏差大无积分，偏差小全积分，由大到小积分作用逐渐增强（有利于抵抗积分饱和，且算法切换系统响应不变动；但算法复杂，且多出参数A、B）  不完全微分的PID控制 （P60）
+微分太强的危害：输出毛刺多，动态过程长久振荡无法进入稳态
+不完全微分传递函数： $$\frac{U(s)}{E(s)}=K_p [1+\frac 1 {T_i s}+\frac{T_d s}{1+\frac{T_d}{K_d} s}]$$ 比例积分+不完全微分($\frac{T_d s}{1+\frac{T_d}{K_d} s}$) 微分项控制输出为 $$U_D(k)=\alpha u_D(k-1)+\frac{K_p T_d}{T}(1-\alpha)[e(k)-e(k-1)])$$ 其中，$T_f=\frac{T_d}{K_d}$，$\alpha=\frac{T_f}{T_f+T}$
+不完整PID数字低通滤波（一阶惯性环节），抗高频干扰，信号突变时比较平滑。
+微分先行PID控制 只对反馈实行不完全积分，对设定量不进行微分。
+ 优点：可避免大幅度改变设定值时造成振荡现象以及抑制噪声 缺点：算法复杂  其他控制方法 数字滤波：低通滤波、均值滤波、中值滤波
+数字PID控制器的工程实现 工程上数字PID控制器程序组成 六个模块：
+ 设定值处理  选择不同来源的设定值（一般存在内存中） 对设定值的变化率进行限制（实现平稳控制）   被控量处理  数字滤波 线性补偿和公式转换 越限报警处理（报警死区：报警死区的作用是为了防止变量值在报警限上下频繁波动时，产生许多不真实的报警 ( http://scada1.</description>
+    </item>
+    
+    <item>
+      <title>Hello World Vno</title>
+      <link>https://skynetx007.github.io/2021/07/hello-world-vno/</link>
+      <pubDate>Mon, 19 Jul 2021 07:28:27 +0800</pubDate>
+      
+      <guid>https://skynetx007.github.io/2021/07/hello-world-vno/</guid>
+      <description>What&amp;rsquo;s this Vno Hugo is a theme for Hugo. It is a port of onevcat&amp;rsquo;s Vno Jekyll, which is originally developed from Dale Anthony&amp;rsquo;s Uno.
+Usage Inside the folder of your Hugo site run:
+$ git submodule add https://github.com/xslingcn/vno-hugo.git themes/vno-hugo Copy everything in the exampleSite folder to the root of your hugo site, then run hugo serve. Your site with Vno Hugo enabled should be accessible in http://localhost:1313/.
+For more information about Hugo, please visit Hugo&amp;rsquo;s site.</description>
+    </item>
+    
+    <item>
+      <title>Sample Post</title>
+      <link>https://skynetx007.github.io/2021/07/sample-post/</link>
+      <pubDate>Mon, 19 Jul 2021 07:28:17 +0800</pubDate>
+      
+      <guid>https://skynetx007.github.io/2021/07/sample-post/</guid>
+      <description>You’ll find this post in your posts directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run hugo serve, which launches a web server and auto-regenerates your site when a file is updated.
+To add new posts, simply run:
+$ hugo new posts/my-sample-post.md And you shall see the my-sample-post.md file in posts directory, just edit the front matter and content as you like.</description>
+    </item>
+    
+  </channel>
+</rss>
